@@ -1,0 +1,31 @@
+{
+    "variables": {"a": "123", "b": "b", "c": "ccccc"},
+    "components": [
+        {
+            "is_ignored": 0,
+            "classname": "Assign",
+            "funcname": "assign",
+            "arguments": {"a": "321"}
+        },
+        {
+            "is_ignored": 0,
+            "classname": "IfStatement",
+            "arguments": "a == '31'",
+            "branch_true": {
+                "is_ignored": 0,
+                "classname": "OutPut",
+                "funcname": "output",
+                "arguments": "d"
+            },
+            "branch_false": {
+                "is_ignored": 0,
+                "classname": "OutPut",
+                "funcname": "output",
+                "arguments": "'123'"
+            }
+        }
+    ],
+    "is_ignored": 0,
+    "classname": "Sequence",
+    "arguments": ""
+}
