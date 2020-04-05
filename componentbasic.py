@@ -3,6 +3,7 @@ from componentbase import ComponentBase
 class OutPut(ComponentBase):
     """
     用于输出的组件
+    可以输出变量的值，也可以输出对象的值
     """
     def __init__(self, component_info, container):
         super().__init__(component_info, container)
@@ -17,6 +18,7 @@ class OutPut(ComponentBase):
 class Assign(ComponentBase):
     """
     用于赋值的组件，支持多重赋值
+    给未定义的变量赋值时会首先在当前容器内新建变量
     """
     def __init__(self, component_info, container):
         super().__init__(component_info, container)
@@ -24,18 +26,23 @@ class Assign(ComponentBase):
     def assign(self):
         # 对dict和ChainMap对象要分情况
         # 如果组件所在容器不含嵌套则直接赋值
+        # 给一个未定义的变量进行赋值，是直接新建变量并赋值，还是抛出异常
         if isinstance(self.container.variables, dict):
-            self.container.variables.update(self.arguments)
-        # 否则按一定规则赋值
-        # 规则：对于需要赋值的每一组键值对，在ChainMaps.maps中先找到就先赋值
+            self.container.variables.update(
+                [(k,self.arguments[k]) for k in self.arguments])
+        # 否则按一定规则赋值，因为变量重复时以上层容器为准
+        # 所以在ChainMaps.maps中先找到就先赋值
         else:
             maps = self.container.variables.maps
-            for dic in maps:
-                for k in self.arguments:
+            for k in self.arguments:
+                flags = False
+                for dic in maps[:-1]:
                     if k in dic:
                         dic.update([(k, self.arguments[k])])
-                    else:
-                        pass
+                        flags = True
+                        break
+                if not flags:
+                    maps[-1].update([(k, self.arguments[k])])
 
 
 class IfStatement(ComponentBase):
